@@ -274,7 +274,7 @@ exports.cft_table_state_change_version = function (session) {
 }
 
 /**
- * История изменнения документа
+ * История изменения документа
  * @example
  * Тип: FUNCTION
  * Схема: core 
@@ -432,40 +432,16 @@ exports.cs_setting_types = function (session) {
  * Первичный ключ: id
  * Схема: core
  * Поля:
- *      b_administrative:boolean - Административная ответственность
- *      b_criminal:boolean - Уголовная ответственность
- *      c_biografy:text - Биографическая информация
- *      c_city_life:text - Город (адрес проживания)
- *      c_city_reg:text - Город (адрес регистрации)
- *      c_education:text - Образование
  *      c_first_name:text - Фамилия
- *      c_form_event:text - Форма проведения
- *      c_house_life:text - Дом (адрес проживания)
- *      c_house_reg:text - Дом (адрес регистрации)
  *      c_last_name:text - Имя
  *      c_middle_name:text - Отчество
  *      c_notice:text - Примечание
- *      c_notify_result:text - Результаты рассмотрения уведомления
- *      c_premise_life:text - Квартира (адрес проживания)
- *      c_premise_reg:text - Квартира (адрес регистрации)
- *      c_show_material:text - Средства наглядной агитации
- *      c_street_life:text - Улица (адрес проживания)
- *      c_street_reg:text - Улица (адрес регистрации)
- *      c_tag:text - Метка
- *      c_target:text - Цель
- *      c_time_place_after:text - Место и время проведения
- *      c_time_place_before:text - Место и время проведения
- *      c_work_place:text - Место работы
- *      d_barthday:date - Дата рождения
- *      d_notify:date - Уведомления
+ *      c_tag:text - c_tag
+ *      d_birthday:date - Дата рождения
  *      dx_created:timestamp with time zone - Дата создания
- *      f_user:integer (core.pd_users.id) - Пользователь
+ *      f_user:integer (core.pd_users.id) - Идентификатор муниципалитета
  *      id:uuid - Идентификатор
- *      n_count_after:integer - Принятое количество участников
- *      n_count_before:integer - Заявленное количество участников
- *      sn_delete:boolean - Признак удаленности
- *      с_arrest:text - Задержание
- *      с_violation:text - Нарушения
+ *      sn_delete:boolean - sn_delete
  * // примеры выборки
  * [{ action: "dd_documents", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
  * // примеры выборки через функцию
@@ -529,7 +505,10 @@ exports.dd_documents = function (session) {
  * Первичный ключ: id
  * Схема: core
  * Поля:
- *      ba_foto:bytea - Файл
+ *      ba_jpg:bytea - Фото ПЦР
+ *      ba_pdf:bytea - PDF
+ *      dx_created:timestamp with time zone - dx_created
+ *      f_document:uuid - f_document
  *      id:uuid - id
  * // примеры выборки
  * [{ action: "dd_files", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
@@ -808,14 +787,13 @@ exports.pd_userinroles = function (session) {
  *      b_disabled:boolean - Отключен
  *      c_description:text - Описание
  *      c_email:text - Эл. почта
- *      c_first_name:text - Имя
+ *      c_first_name:text - Наименование
  *      c_login:text - Логин
  *      c_password:text - Пароль
- *      c_phone:text - Телефон
  *      id:integer - Идентификатор
  *      s_hash:text - Hash
- *      sn_delete:boolean - Удален
  *      s_salt:text - Salt
+ *      sn_delete:boolean - Удален
  * // примеры выборки
  * [{ action: "pd_users", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
  * // примеры выборки через функцию
@@ -930,7 +908,6 @@ exports.pf_update_user_roles = function (session) {
  *      c_email:text - c_email
  *      c_first_name:text - c_first_name
  *      c_login:text - c_login
- *      c_phone:text - c_phone
  *      id:integer - id
  * // примеры выборки
  * [{ action: "pv_users", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
