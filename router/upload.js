@@ -18,7 +18,9 @@ module.exports = function () {
 
         db.provider.select('core', 'dd_files', { limit: 1, select: 'id, ba_' + type, filter: filters, sort: sort }, null, function (data) {
             if (data.meta.success && data.result.records.length > 0) {
-                res.setHeader('Content-Disposition', 'attachment; filename=' + id + '.' + type);
+                if (type == 'jpg') {
+                    res.setHeader('Content-Disposition', 'attachment; filename=' + id + '.' + type);
+                }
                 res.setHeader("Content-Type", type == "jpg" ? 'image/jpeg' : 'application/pdf');
                 res.send(data.result.records[0]["ba_" + type]);
             } else {
@@ -32,9 +34,11 @@ module.exports = function () {
         var type = req.query.type;
         var filters = [{ property: "id", operator: "=", value: id }];
 
-        db.provider.select('core', 'dd_files', { limit: 1, select: 'id, ba_' + type, filter: filters }, null, function (data) {
+        db.provider.select('core', 'dd_files', { select: 'id, ba_' + type, filter: filters }, null, function (data) {
             if (data.meta.success && data.result.records.length > 0) {
-                res.setHeader('Content-Disposition', 'attachment; filename=' + id + '.' + type);
+                if (type == 'jpg') {
+                    res.setHeader('Content-Disposition', 'attachment; filename=' + id + '.' + type);
+                }
                 res.setHeader("Content-Type", type == "jpg" ? 'image/jpeg' : 'application/pdf');
                 res.send(data.result.records[0]["ba_" + type]);
             } else {
