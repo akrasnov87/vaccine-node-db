@@ -47,6 +47,18 @@ module.exports = function () {
         });
     });
 
+    router.get("/filebydel", function (req, res) {
+        var id = req.query.id;
+
+        db.provider.delete('core', 'dd_files', 'id', { id: id }, function (data) {
+            if (data.meta.success) {
+                res.send("SUCCESS");
+            } else {
+                res.send(data.meta.msg);
+            }
+        });
+    });
+
     router.post("/file", function (req, res) {
         var id = req.query.id;
         var files = req.files;
