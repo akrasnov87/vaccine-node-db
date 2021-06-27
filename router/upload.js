@@ -61,9 +61,10 @@ module.exports = function () {
 
     router.post("/file", function (req, res) {
         var id = req.query.id;
+        var dx_created = req.query.dx_created;
         var files = req.files;
 
-        var obj = { f_document: id }
+        var obj = { f_document: id, dx_created: dx_created };
         if (files["jpg"]) {
             obj["ba_jpg"] = files["jpg"].data
         }
