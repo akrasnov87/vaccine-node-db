@@ -50,7 +50,7 @@ module.exports = function () {
     router.get("/filebydel", function (req, res) {
         var id = req.query.id;
 
-        db.provider.delete('core', 'dd_files', 'id', { id: id }, function (data) {
+        db.provider.insertOrUpdate('core', 'dd_files', 'id', { id: id, sn_delete: true }, function (data) {
             if (data.meta.success) {
                 res.send("SUCCESS");
             } else {
