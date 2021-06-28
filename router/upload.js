@@ -17,7 +17,7 @@ module.exports = function () {
         if (type != '') {
             filters.push({ property: 'c_type', operator: "=", value: type });
         } else {
-            filters.push({ property: 'c_type', operator: "!=", value: 'sert' });
+            filters.push({ property: 'c_type', operator: "<>", value: 'sert' });
         }
         var sort = [{ property: "dx_created", direction: "DESC" }];
 
@@ -39,8 +39,9 @@ module.exports = function () {
         var id = req.query.id;
         var filters = [{ property: "id", operator: "=", value: id }];
 
-        db.provider.select('core', 'dd_files', { select: 'id, ba_data', filter: filters }, null, function (data) {
+        db.provider.select('core', 'dd_files', { select: 'id, ba_data, c_type', filter: filters }, null, function (data) {
             if (data.meta.success && data.result.records.length > 0) {
+                var type = data.result.records[0].c_type;
                 if (type != 'sert') {
                     res.setHeader('Content-Disposition', 'attachment; filename=' + id + '.jpg');
                 }

@@ -355,6 +355,131 @@ exports.cf_mui_sd_table_change = function (session) {
 }
 
 /**
+ * Сводный отчет
+ * @example
+ * Тип: FUNCTION
+ * Схема: rpt 
+ * // примеры выборки
+ * [{ action: "cf_rpt_orgs", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры выборки через функцию
+ * [{ action: "cf_rpt_orgs", method: "Select", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.cf_rpt_orgs = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            provider.call('rpt', 'cf_rpt_orgs', query_param.params, function() {
+                onQueryListener('cf_rpt_orgs', 'QUERY', null, query_param, session);
+                callback(arguments[0]);
+            });
+        },
+        Select: function (query_param, callback) {
+            provider.select('rpt', 'cf_rpt_orgs()', query_param, filter.security(session), function() {
+                onQueryListener('cf_rpt_orgs', 'SELECT', null, query_param, session);
+                callback(arguments[0]);
+            });
+        }
+    }
+}
+
+/**
+ * Отчет сотрудников
+ * @example
+ * Тип: FUNCTION
+ * Схема: rpt 
+ * // примеры выборки
+ * [{ action: "cf_rpt_user", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры выборки через функцию
+ * [{ action: "cf_rpt_user", method: "Select", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.cf_rpt_user = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            provider.call('rpt', 'cf_rpt_user', query_param.params, function() {
+                onQueryListener('cf_rpt_user', 'QUERY', null, query_param, session);
+                callback(arguments[0]);
+            });
+        },
+        Select: function (query_param, callback) {
+            provider.select('rpt', 'cf_rpt_user()', query_param, filter.security(session), function() {
+                onQueryListener('cf_rpt_user', 'SELECT', null, query_param, session);
+                callback(arguments[0]);
+            });
+        }
+    }
+}
+
+/**
+ * Статус документа
+ * @example
+ * Тип: BASE TABLE
+ * Первичный ключ: id
+ * Схема: core
+ * Поля:
+ *      b_default:boolean - По умолчанию
+ *      b_disabled:boolean - Отключено
+ *      c_const:text - Константа
+ *      c_name:text - Наименование
+ *      c_short_name:text - Краткое наименование
+ *      id:integer - Идентификатор
+ *      n_code:integer - Код
+ *      n_order:integer - Сортировка
+ * // примеры выборки
+ * [{ action: "cs_document_status", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры выборки через функцию
+ * [{ action: "cf_mui_cs_document_status", method: "Select", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры добавления
+ * [{ action: "cs_document_status", method: "Add", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры обновления
+ * [{ action: "cs_document_status", method: "Update", data: [{id:any ...}|[{id:any ...}], type: "rpc", tid: 0 }]
+ * // примеры создания или обновления
+ * [{ action: "cs_document_status", method: "AddOrUpdate", data: [{id:any ...}], type: "rpc", tid: 0 }]
+ * // примеры удаления
+ * [{ action: "cs_document_status", method: "Delete", data: [{id:any ...}|[{id:any ...}], type: "rpc", tid: 0 }]
+ * // примеры получения количества записей
+ * [{ action: "cs_document_status", method: "Count", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.cs_document_status = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            onQueryListener('cs_document_status', 'QUERY', 'id', query_param, session);
+            provider.select('core', 'cs_document_status', query_param, filter.security(session), callback);
+        },
+        Select: function (query_param, callback) {
+            onQueryListener('cs_document_status', 'SELECT', 'id', query_param, session);
+            provider.select('core', 'cf_mui_cs_document_status()', query_param, filter.security(session), callback);
+        },
+        Add: function (data, callback) {
+            provider.insert('core', 'cs_document_status', data, function() {
+                onQueryListener('cs_document_status', 'INSERT', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        AddOrUpdate: function (data, callback) {
+            provider.insertOrUpdate('core', 'cs_document_status', 'id', data, function() {
+                onQueryListener('cs_document_status', 'INSERT_OR_UPDATE', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        Update: function (data, callback) {
+            provider.update('core', 'cs_document_status', 'id', data, function() {
+                onQueryListener('cs_document_status', 'UPDATE', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        Delete: function (data, callback) {
+            provider.delete('core', 'cs_document_status', 'id', data, function() {
+                onQueryListener('cs_document_status', 'DELETE', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        Count: function (query_param, callback) {
+            onQueryListener('cs_document_status', 'COUNT', 'id', query_param, session);
+            provider.count('core', 'cs_document_status', query_param, callback);
+        }
+    }
+}
+
+/**
  * Тип настройки
  * @example
  * Тип: BASE TABLE
@@ -439,6 +564,7 @@ exports.cs_setting_types = function (session) {
  *      c_tag:text - c_tag
  *      d_birthday:date - Дата рождения
  *      dx_created:timestamp with time zone - Дата создания
+ *      f_status:integer (core.cs_document_status.id) - f_status
  *      f_user:integer (core.pd_users.id) - Идентификатор муниципалитета
  *      id:uuid - Идентификатор
  *      sn_delete:boolean - sn_delete
@@ -505,11 +631,15 @@ exports.dd_documents = function (session) {
  * Первичный ключ: id
  * Схема: core
  * Поля:
- *      ba_jpg:bytea - Фото ПЦР
- *      ba_pdf:bytea - PDF
+ *      b_verify:boolean - Мне для отчета и генерации в C#
+ *      ba_data:bytea - Фото
+ *      c_gosuslugi_key:text - Ключ от сертификата, если GUID.Empty, то сертификат не валиден
+ *      c_type:text - sert(сертификат)|test(ПЦР)|med(справка)|vac(вакцинирован)
+ *      d_date:date - Дата справки, вакцинации, медотвод
  *      dx_created:timestamp with time zone - dx_created
- *      f_document:uuid - f_document
+ *      f_document:uuid (core.dd_documents.id) - f_document
  *      id:uuid - id
+ *      sn_delete:boolean - sn_delete
  * // примеры выборки
  * [{ action: "dd_files", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
  * // примеры выборки через функцию
@@ -583,7 +713,7 @@ exports.dd_files = function (session) {
  *      c_name:text - Табл./Предст./Функц.
  *      c_path:text - Путь в файловой системе
  *      f_role:integer (core.pd_roles.id) - Роль
- *      f_user:integer (core.pd_users.id) - Пользователь
+ *      f_user:integer - Пользователь
  *      id:integer - Идентификатор
  *      sn_delete:boolean - Удален
  * // примеры выборки
@@ -791,6 +921,7 @@ exports.pd_userinroles = function (session) {
  *      c_login:text - Логин
  *      c_password:text - Пароль
  *      id:integer - Идентификатор
+ *      n_count:integer - n_count
  *      s_hash:text - Hash
  *      s_salt:text - Salt
  *      sn_delete:boolean - Удален
@@ -851,7 +982,7 @@ exports.pd_users = function (session) {
 }
 
 /**
- * Системная функция. Получение прав доступа для пользователя. Используется NodeJS
+ * Системная функция. Получение прав доступа для пользователя. Используется vaccineJS
  * @example
  * Тип: FUNCTION
  * Схема: core 
