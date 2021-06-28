@@ -13,13 +13,19 @@ module.exports = function () {
     router.get("/file", function (req, res) {
         var id = req.query.id;
         var type = req.query.type;
-        var filters = [{ property: "f_document", operator: "=", value: id }, { property: 'c_type', operator: "=", value: type }];
+        var filters = [{ property: "f_document", operator: "=", value: id }];
+        if (type != '') {
+            filters.push({ property: 'c_type', operator: "=", value: type });
+        } else {
+            filters.push({ property: 'c_type', operator: "!=", value: 'sert' });
+        }
         var sort = [{ property: "dx_created", direction: "DESC" }];
 
-        db.provider.select('core', 'dd_files', { limit: 1, select: 'id, ba_data', filter: filters, sort: sort }, null, function (data) {
+        db.provider.select('core', 'dd_files', { limit: 1, select: 'id, ba_data, c_type', filter: filters, sort: sort }, null, function (data) {
             if (data.meta.success && data.result.records.length > 0) {
-                if (type == 'sert') {
-                    res.setHeader('Content-Disposition', 'attachment; filename=' + id + '.' + type);
+                type = data.result.records[0].c_type;
+                if (type != 'sert') {
+                    res.setHeader('Content-Disposition', 'attachment; filename=' + id + '.jpg');
                 }
                 res.setHeader("Content-Type", type != "sert" ? 'image/jpeg' : 'application/pdf');
                 res.send(data.result.records[0]["ba_data"]);
@@ -35,11 +41,15 @@ module.exports = function () {
 
         db.provider.select('core', 'dd_files', { select: 'id, ba_data', filter: filters }, null, function (data) {
             if (data.meta.success && data.result.records.length > 0) {
-                if (type == 'sert') {
-                    res.setHeader('Content-Disposition', 'attachment; filename=' + id + '.' + type);
+                if (type != 'sert') {
+                    res.setHeader('Content-Disposition', 'attachment; filename=' + id + '.jpg');
                 }
                 res.setHeader("Content-Type", type != "sert" ? 'image/jpeg' : 'application/pdf');
-                res.send(data.result.records[0]["ba_data"]);
+                if (data.result.records[0]["ba_data"]) {
+                    res.send(data.result.records[0]["ba_data"]);
+                } else {
+                    res.send(data.meta.msg);
+                }
             } else {
                 res.send(data.meta.msg);
             }
