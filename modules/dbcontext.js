@@ -236,44 +236,6 @@ exports.cd_sys_log = function (session) {
 }
 
 /**
- * Триггер. Процедура логирования действия пользователя
- * @example
- * Тип: FUNCTION
- * Схема: core 
- * // примеры выборки
- * [{ action: "cft_log_action", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
- */
-exports.cft_log_action = function (session) {
-    return {
-        Query: function (query_param, callback) {
-            provider.call('core', 'cft_log_action', query_param.params, function() {
-                onQueryListener('cft_log_action', 'QUERY', null, query_param, session);
-                callback(arguments[0]);
-            });
-        }
-    }
-}
-
-/**
- * Триггер. Обновление справочной версии
- * @example
- * Тип: FUNCTION
- * Схема: core 
- * // примеры выборки
- * [{ action: "cft_table_state_change_version", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
- */
-exports.cft_table_state_change_version = function (session) {
-    return {
-        Query: function (query_param, callback) {
-            provider.call('core', 'cft_table_state_change_version', query_param.params, function() {
-                onQueryListener('cft_table_state_change_version', 'QUERY', null, query_param, session);
-                callback(arguments[0]);
-            });
-        }
-    }
-}
-
-/**
  * История изменения документа
  * @example
  * Тип: FUNCTION
@@ -490,6 +452,44 @@ exports.cf_rpt_user = function (session) {
 }
 
 /**
+ * Триггер. Процедура логирования действия пользователя
+ * @example
+ * Тип: FUNCTION
+ * Схема: core 
+ * // примеры выборки
+ * [{ action: "cft_log_action", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.cft_log_action = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            provider.call('core', 'cft_log_action', query_param.params, function() {
+                onQueryListener('cft_log_action', 'QUERY', null, query_param, session);
+                callback(arguments[0]);
+            });
+        }
+    }
+}
+
+/**
+ * Триггер. Обновление справочной версии
+ * @example
+ * Тип: FUNCTION
+ * Схема: core 
+ * // примеры выборки
+ * [{ action: "cft_table_state_change_version", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.cft_table_state_change_version = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            provider.call('core', 'cft_table_state_change_version', query_param.params, function() {
+                onQueryListener('cft_table_state_change_version', 'QUERY', null, query_param, session);
+                callback(arguments[0]);
+            });
+        }
+    }
+}
+
+/**
  * Статус документа
  * @example
  * Тип: BASE TABLE
@@ -638,13 +638,13 @@ exports.cs_setting_types = function (session) {
  * Первичный ключ: id
  * Схема: core
  * Поля:
- *      c_first_name:text - Фамилия
  *      c_last_name:text - Имя
+ *      d_expired_date:date - Дата истечения срока давности
  *      c_middle_name:text - Отчество
  *      c_notice:text - Примечание
  *      c_tag:text - c_tag
  *      d_birthday:date - Дата рождения
- *      d_expired_date:date - Дата истечения срока давности
+ *      c_first_name:text - Фамилия
  *      dx_created:timestamp with time zone - Дата создания
  *      f_status:integer (core.cs_document_status.id) - f_status
  *      f_user:integer (core.pd_users.id) - Идентификатор муниципалитета
@@ -716,7 +716,6 @@ exports.dd_documents = function (session) {
  *      b_verify:boolean - Мне для отчета и генерации в C#
  *      ba_data:bytea - Фото
  *      c_gosuslugi_key:text - Ключ от сертификата, если GUID.Empty, то сертификат не валиден
- *      c_notice:text - c_notice
  *      c_type:text - sert(сертификат)|test(ПЦР)|med(справка)|vac(вакцинирован)
  *      d_date:date - Дата справки, вакцинации, медотвод
  *      dx_created:timestamp with time zone - dx_created
@@ -786,13 +785,13 @@ exports.dd_files = function (session) {
  * Первичный ключ: id
  * Схема: rpt
  * Поля:
- *      dx_created:date - dx_created
  *      f_user:integer (core.pd_users.id) - f_user
+ *      n_pcr7:integer - n_pcr7
  *      id:integer - id
  *      n_med:integer - n_med
  *      n_med_percent:numeric - n_med_percent
  *      n_pcr:integer - n_pcr
- *      n_pcr7:integer - n_pcr7
+ *      dx_created:date - dx_created
  *      n_pcr7_percent:numeric - n_pcr7_percent
  *      n_pcr_percent:numeric - n_pcr_percent
  *      n_sert:integer - n_sert
@@ -862,14 +861,14 @@ exports.dd_main_stat = function (session) {
  * Первичный ключ: id
  * Схема: rpt
  * Поля:
- *      dx_created:date - dx_created
  *      f_type:integer - f_type
+ *      n_pcr7:integer - n_pcr7
  *      f_user:integer (core.pd_users.id) - f_user
  *      id:integer - id
  *      n_med:integer - n_med
  *      n_med_percent:numeric - n_med_percent
  *      n_pcr:integer - n_pcr
- *      n_pcr7:integer - n_pcr7
+ *      dx_created:date - dx_created
  *      n_pcr7_percent:numeric - n_pcr7_percent
  *      n_pcr_percent:numeric - n_pcr_percent
  *      n_sert:integer - n_sert
@@ -939,13 +938,13 @@ exports.dd_main_type_stat = function (session) {
  * Первичный ключ: id
  * Схема: core
  * Поля:
- *      b_creatable:boolean - Разрешено создание
  *      b_deletable:boolean - Разрешено удалени
+ *      c_function:text - Функция RPC или её часть
  *      b_editable:boolean - Разрешено редактирование
  *      b_full_control:boolean - Дополнительный доступ
  *      c_columns:text - Запрещенные колонки
  *      c_criteria:text - Серверный фильтр
- *      c_function:text - Функция RPC или её часть
+ *      b_creatable:boolean - Разрешено создание
  *      c_name:text - Табл./Предст./Функц.
  *      c_path:text - Путь в файловой системе
  *      f_role:integer (core.pd_roles.id) - Роль
@@ -1150,14 +1149,14 @@ exports.pd_userinroles = function (session) {
  * Первичный ключ: id
  * Схема: core
  * Поля:
- *      b_disabled:boolean - Отключен
  *      c_description:text - Описание
+ *      d_expired_date:date - d_expired_date
  *      c_email:text - Эл. почта
  *      c_first_name:text - Наименование
  *      c_login:text - Логин
  *      c_main_user:text - Куратор
  *      c_password:text - Пароль
- *      d_expired_date:date - d_expired_date
+ *      b_disabled:boolean - Отключен
  *      f_parent:integer - Родительская запись
  *      f_type:integer - Тип организации из таблицы ps_user_types
  *      id:integer - Идентификатор
@@ -1628,25 +1627,6 @@ exports.sf_expire_user = function (session) {
         Query: function (query_param, callback) {
             provider.call('core', 'sf_expire_user', query_param.params, function() {
                 onQueryListener('sf_expire_user', 'QUERY', null, query_param, session);
-                callback(arguments[0]);
-            });
-        }
-    }
-}
-
-/**
- * Версия АРМ
- * @example
- * Тип: FUNCTION
- * Схема: core 
- * // примеры выборки
- * [{ action: "sf_get_arm_version", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
- */
-exports.sf_get_arm_version = function (session) {
-    return {
-        Query: function (query_param, callback) {
-            provider.call('core', 'sf_get_arm_version', query_param.params, function() {
-                onQueryListener('sf_get_arm_version', 'QUERY', null, query_param, session);
                 callback(arguments[0]);
             });
         }

@@ -57,7 +57,7 @@ module.exports = function (req, res, finish) {
                                 result.result.total = result.result.records.length;
                             }
                         }
-                        if (keygen.check() != true) {
+                        if(keygen.check() != true) {
                             result.meta.activate = false;
                         }
                         result.authorizeTime = res.authorizeTime;
@@ -104,7 +104,7 @@ module.exports = function (req, res, finish) {
         }
     }
 
-    getTableState(req.isFrom, res.user, function (tableChange) {
+    getTableState(req.isFrom, res.user, function(tableChange) {
         if (Array.isArray(body) == true) {
             next(tableChange, function () {
                 finish(results);

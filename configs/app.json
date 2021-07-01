@@ -1,5 +1,5 @@
 {
-    "reference": "", /// reference: тема;
+    "reference": "production", /// reference: тема;
     "virtual_dir_path": "", /// virtual_dir_path: виртуальный каталог;
     "remote_namespace": "PN", /// remote_namespace: Пространство имен по умолчанию;
     "connectionString": "host:localhost;port:5432;user:mobnius;password:mobnius-0;database:mobnius_kes", /// connectionString: строка подключение;

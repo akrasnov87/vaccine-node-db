@@ -9,7 +9,6 @@ var authorizeDb = require('./authorization-db');
 var join = require('path').join;
 var conf = require('node-config')(join(__dirname, '../'));
 var logjs = require('../log');
-var db = require('../dbcontext');
 var keygen = require('./keygen');
 
 /**
@@ -93,26 +92,16 @@ exports.authorize = function (req, res) {
                 }
             });
         } else {
-            if (user.c_version != Version) {
-                db.provider.db().query('update core.pd_users set c_version = $1 where id = $2', [Version, user.id], function (err, rows) {
-                    setResponse();
-                });
-            } else {
-                setResponse();
-            }
-
-            function setResponse() {
-                res.json({
-                    token: Buffer.from(UserName + ':' + Password).toString('base64'),
-                    user: {
-                        userId: user.id,
-                        claims: user.c_claims,
-                        userName: user.c_user_name,
-                        disabled: user.b_disabled
-                    },
-                    activate: keygen.check() // true - система активации, false - идет пробный период, undefined - активация истекла
-                });
-            }
+            res.json({
+                token: Buffer.from(UserName + ':' + Password).toString('base64'),
+                user: {
+                    userId: user.id,
+                    claims: user.c_claims,
+                    userName: user.c_user_name,
+                    disabled: user.b_disabled
+                },
+                activate: keygen.check() // true - система активации, false - идет пробный период, undefined - активация истекла
+            });
         }
     });
 }
