@@ -15,31 +15,18 @@ var args = require("args-parser")(process.argv);
 var server = null;
 var port = normalizePort(args.port);
 var utils = require('../modules/utils');
-var db = require('../modules/dbcontext');
 
 init(function() {  // инициализация схемы БД
     var accessesCacher = require('../modules/rpc/modules/accesses-cacher');
 
-    db.sf_get_arm_version().Query({}, function (version) {
+    var app = require('../index');
+    var vPath = utils.getVirtualDirPath();
 
-        var armVersion = '0.0.0.0';
-        if (version.meta.success) {
-            armVersion = version.result.records[0].sf_get_arm_version;
-        } else {
-            armVersion = version.meta.msg;
-        }
-
-        var app = require('../index');
-        global.armVersion = armVersion;
-        app.set('armVersion', armVersion);
-        var vPath = utils.getVirtualDirPath();
-
-        server = http.createServer(app);
-        server.listen(port);
-        logjs.log('server start http://localhost:' + port);
-        server.on('error', onError);
-        server.on('listening', onListening);
-    });
+    server = http.createServer(app);
+    server.listen(port);
+    logjs.log('server start http://localhost:' + port);
+    server.on('error', onError);
+    server.on('listening', onListening);
 });
 
 /**

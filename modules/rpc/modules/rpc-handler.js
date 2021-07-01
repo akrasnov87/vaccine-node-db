@@ -11,6 +11,7 @@ var logjs = require('../../log');
 var utils = require('../../utils');
 var accessesCacher = require('./accesses-cacher');
 var keygen = require('../../authorize/keygen');
+var db = require('../../dbcontext');
 
 module.exports = function (req, res, finish) {
     var dt = new Date();
@@ -47,30 +48,32 @@ module.exports = function (req, res, finish) {
             accessFilter.filter(item, res.user.id, schema, function (err, rows) {
                 if (rows && item.data && item.data.length > 0) {
                     rpcQuery.query(sessionState, item.action, item.method, item.tid, item.data[0], item.change, tableChange, function (result) {
-                        if (item.method != 'Query' && item.method != 'Exists' && item.method != 'Select') { // тут добавлен аудит для записей
-                            var table = schema.tables.filter(function (i) {
-                                return i.TABLE_NAME == item.action;
-                            })[0];
+                        armVersion(function(ver) {
+                            if (item.method != 'Query' && item.method != 'Exists' && item.method != 'Select') { // тут добавлен аудит для записей
+                                var table = schema.tables.filter(function (i) {
+                                    return i.TABLE_NAME == item.action;
+                                })[0];
 
-                            if (table) {
-                                result.result.records = item.data[0];
-                                result.result.total = result.result.records.length;
+                                if (table) {
+                                    result.result.records = item.data[0];
+                                    result.result.total = result.result.records.length;
+                                }
                             }
-                        }
-                        if(keygen.check() != true) {
-                            result.meta.activate = false;
-                        }
-                        result.authorizeTime = res.authorizeTime;
-                        result.rpcTime = new Date() - dt;
-                        result.host = utils.getCurrentHost();
-                        result.arm_version = global.armVersion;
-                        if (alias) {
-                            result.action = alias;
-                        }
-                        results.push(result);
-                        // добавлена injection
-                        rpcInjection.handler(sessionState, item.action, item.method, item.data[0], result);
-                        next(tableChange, callback);
+                            if(keygen.check() != true) {
+                                result.meta.activate = false;
+                            }
+                            result.authorizeTime = res.authorizeTime;
+                            result.rpcTime = new Date() - dt;
+                            result.host = utils.getCurrentHost();
+                            result.arm_version = ver;
+                            if (alias) {
+                                result.action = alias;
+                            }
+                            results.push(result);
+                            // добавлена injection
+                            rpcInjection.handler(sessionState, item.action, item.method, item.data[0], result);
+                            next(tableChange, callback);
+                        });
                     });
                 } else {
                     if (rows == null && res.user.id == -1) { // значит не авторизовался
@@ -149,4 +152,21 @@ function createBadRequest(req, res, itemRPC, err) {
     };
     console.error(response.meta.msg);
     return response;
+}
+
+var _armVersion = '0.0.0.0';
+function armVersion(callback) {
+    if (_armVersion) {
+        callback(_armVersion);
+    } else {
+        db.sf_get_arm_version().Query({}, function (version) {
+            
+            if (version.meta.success) {
+                _armVersion = version.result.records[0].sf_get_arm_version;
+            } else {
+                _armVersion = version.meta.msg;
+            }
+            callback(_armVersion);
+        });
+    }
 }
