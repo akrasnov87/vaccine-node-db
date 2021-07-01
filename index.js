@@ -13,12 +13,10 @@ var join = path.join;
 var fileUpload = require('express-fileupload');
 var rpc = require('./modules/rpc/index');
 var exists = require('./router/exists');
-var reset = require('./router/reset.js');
 var upload = require('./router/upload');
 var logjs = require('./modules/log');
 var utils = require('./modules/utils');
 var fs = require('fs');
-var args = require("args-parser")(process.argv);
 var keygen = require('./modules/authorize/keygen');
 
 var app = express();

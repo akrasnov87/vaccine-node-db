@@ -355,6 +355,33 @@ exports.cf_mui_sd_table_change = function (session) {
 }
 
 /**
+ * Главный сводный отчет
+ * @example
+ * Тип: FUNCTION
+ * Схема: rpt 
+ * // примеры выборки
+ * [{ action: "cf_rpt_main", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры выборки через функцию
+ * [{ action: "cf_rpt_main", method: "Select", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.cf_rpt_main = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            provider.call('rpt', 'cf_rpt_main', query_param.params, function() {
+                onQueryListener('cf_rpt_main', 'QUERY', null, query_param, session);
+                callback(arguments[0]);
+            });
+        },
+        Select: function (query_param, callback) {
+            provider.select('rpt', 'cf_rpt_main()', query_param, filter.security(session), function() {
+                onQueryListener('cf_rpt_main', 'SELECT', null, query_param, session);
+                callback(arguments[0]);
+            });
+        }
+    }
+}
+
+/**
  * Сводный отчет
  * @example
  * Тип: FUNCTION
@@ -375,6 +402,60 @@ exports.cf_rpt_orgs = function (session) {
         Select: function (query_param, callback) {
             provider.select('rpt', 'cf_rpt_orgs()', query_param, filter.security(session), function() {
                 onQueryListener('cf_rpt_orgs', 'SELECT', null, query_param, session);
+                callback(arguments[0]);
+            });
+        }
+    }
+}
+
+/**
+ * Сводный отчет по отраслям
+ * @example
+ * Тип: FUNCTION
+ * Схема: rpt 
+ * // примеры выборки
+ * [{ action: "cf_rpt_orgs_types", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры выборки через функцию
+ * [{ action: "cf_rpt_orgs_types", method: "Select", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.cf_rpt_orgs_types = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            provider.call('rpt', 'cf_rpt_orgs_types', query_param.params, function() {
+                onQueryListener('cf_rpt_orgs_types', 'QUERY', null, query_param, session);
+                callback(arguments[0]);
+            });
+        },
+        Select: function (query_param, callback) {
+            provider.select('rpt', 'cf_rpt_orgs_types()', query_param, filter.security(session), function() {
+                onQueryListener('cf_rpt_orgs_types', 'SELECT', null, query_param, session);
+                callback(arguments[0]);
+            });
+        }
+    }
+}
+
+/**
+ * Сводный отчет о достоверности сертификата
+ * @example
+ * Тип: FUNCTION
+ * Схема: rpt 
+ * // примеры выборки
+ * [{ action: "cf_rpt_sert_verify", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры выборки через функцию
+ * [{ action: "cf_rpt_sert_verify", method: "Select", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.cf_rpt_sert_verify = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            provider.call('rpt', 'cf_rpt_sert_verify', query_param.params, function() {
+                onQueryListener('cf_rpt_sert_verify', 'QUERY', null, query_param, session);
+                callback(arguments[0]);
+            });
+        },
+        Select: function (query_param, callback) {
+            provider.select('rpt', 'cf_rpt_sert_verify()', query_param, filter.security(session), function() {
+                onQueryListener('cf_rpt_sert_verify', 'SELECT', null, query_param, session);
                 callback(arguments[0]);
             });
         }
@@ -563,6 +644,7 @@ exports.cs_setting_types = function (session) {
  *      c_notice:text - Примечание
  *      c_tag:text - c_tag
  *      d_birthday:date - Дата рождения
+ *      d_expired_date:date - Дата истечения срока давности
  *      dx_created:timestamp with time zone - Дата создания
  *      f_status:integer (core.cs_document_status.id) - f_status
  *      f_user:integer (core.pd_users.id) - Идентификатор муниципалитета
@@ -634,6 +716,7 @@ exports.dd_documents = function (session) {
  *      b_verify:boolean - Мне для отчета и генерации в C#
  *      ba_data:bytea - Фото
  *      c_gosuslugi_key:text - Ключ от сертификата, если GUID.Empty, то сертификат не валиден
+ *      c_notice:text - c_notice
  *      c_type:text - sert(сертификат)|test(ПЦР)|med(справка)|vac(вакцинирован)
  *      d_date:date - Дата справки, вакцинации, медотвод
  *      dx_created:timestamp with time zone - dx_created
@@ -692,6 +775,159 @@ exports.dd_files = function (session) {
         Count: function (query_param, callback) {
             onQueryListener('dd_files', 'COUNT', 'id', query_param, session);
             provider.count('core', 'dd_files', query_param, callback);
+        }
+    }
+}
+
+/**
+ * Сводная статистика
+ * @example
+ * Тип: BASE TABLE
+ * Первичный ключ: id
+ * Схема: rpt
+ * Поля:
+ *      dx_created:date - dx_created
+ *      f_user:integer (core.pd_users.id) - f_user
+ *      id:integer - id
+ *      n_med:integer - n_med
+ *      n_med_percent:numeric - n_med_percent
+ *      n_pcr:integer - n_pcr
+ *      n_pcr7:integer - n_pcr7
+ *      n_pcr7_percent:numeric - n_pcr7_percent
+ *      n_pcr_percent:numeric - n_pcr_percent
+ *      n_sert:integer - n_sert
+ *      n_sert_percent:numeric - n_sert_percent
+ *      n_vaccine:integer - n_vaccine
+ *      n_vaccine_percent:numeric - n_vaccine_percent
+ * // примеры выборки
+ * [{ action: "dd_main_stat", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры выборки через функцию
+ * [{ action: "cf_mui_dd_main_stat", method: "Select", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры добавления
+ * [{ action: "dd_main_stat", method: "Add", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры обновления
+ * [{ action: "dd_main_stat", method: "Update", data: [{id:any ...}|[{id:any ...}], type: "rpc", tid: 0 }]
+ * // примеры создания или обновления
+ * [{ action: "dd_main_stat", method: "AddOrUpdate", data: [{id:any ...}], type: "rpc", tid: 0 }]
+ * // примеры удаления
+ * [{ action: "dd_main_stat", method: "Delete", data: [{id:any ...}|[{id:any ...}], type: "rpc", tid: 0 }]
+ * // примеры получения количества записей
+ * [{ action: "dd_main_stat", method: "Count", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.dd_main_stat = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            onQueryListener('dd_main_stat', 'QUERY', 'id', query_param, session);
+            provider.select('rpt', 'dd_main_stat', query_param, filter.security(session), callback);
+        },
+        Select: function (query_param, callback) {
+            onQueryListener('dd_main_stat', 'SELECT', 'id', query_param, session);
+            provider.select('rpt', 'cf_mui_dd_main_stat()', query_param, filter.security(session), callback);
+        },
+        Add: function (data, callback) {
+            provider.insert('rpt', 'dd_main_stat', data, function() {
+                onQueryListener('dd_main_stat', 'INSERT', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        AddOrUpdate: function (data, callback) {
+            provider.insertOrUpdate('rpt', 'dd_main_stat', 'id', data, function() {
+                onQueryListener('dd_main_stat', 'INSERT_OR_UPDATE', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        Update: function (data, callback) {
+            provider.update('rpt', 'dd_main_stat', 'id', data, function() {
+                onQueryListener('dd_main_stat', 'UPDATE', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        Delete: function (data, callback) {
+            provider.delete('rpt', 'dd_main_stat', 'id', data, function() {
+                onQueryListener('dd_main_stat', 'DELETE', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        Count: function (query_param, callback) {
+            onQueryListener('dd_main_stat', 'COUNT', 'id', query_param, session);
+            provider.count('rpt', 'dd_main_stat', query_param, callback);
+        }
+    }
+}
+
+/**
+ * Сводная статистика
+ * @example
+ * Тип: BASE TABLE
+ * Первичный ключ: id
+ * Схема: rpt
+ * Поля:
+ *      dx_created:date - dx_created
+ *      f_type:integer - f_type
+ *      f_user:integer (core.pd_users.id) - f_user
+ *      id:integer - id
+ *      n_med:integer - n_med
+ *      n_med_percent:numeric - n_med_percent
+ *      n_pcr:integer - n_pcr
+ *      n_pcr7:integer - n_pcr7
+ *      n_pcr7_percent:numeric - n_pcr7_percent
+ *      n_pcr_percent:numeric - n_pcr_percent
+ *      n_sert:integer - n_sert
+ *      n_sert_percent:numeric - n_sert_percent
+ *      n_vaccine:integer - n_vaccine
+ *      n_vaccine_percent:numeric - n_vaccine_percent
+ * // примеры выборки
+ * [{ action: "dd_main_type_stat", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры выборки через функцию
+ * [{ action: "cf_mui_dd_main_type_stat", method: "Select", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры добавления
+ * [{ action: "dd_main_type_stat", method: "Add", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры обновления
+ * [{ action: "dd_main_type_stat", method: "Update", data: [{id:any ...}|[{id:any ...}], type: "rpc", tid: 0 }]
+ * // примеры создания или обновления
+ * [{ action: "dd_main_type_stat", method: "AddOrUpdate", data: [{id:any ...}], type: "rpc", tid: 0 }]
+ * // примеры удаления
+ * [{ action: "dd_main_type_stat", method: "Delete", data: [{id:any ...}|[{id:any ...}], type: "rpc", tid: 0 }]
+ * // примеры получения количества записей
+ * [{ action: "dd_main_type_stat", method: "Count", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.dd_main_type_stat = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            onQueryListener('dd_main_type_stat', 'QUERY', 'id', query_param, session);
+            provider.select('rpt', 'dd_main_type_stat', query_param, filter.security(session), callback);
+        },
+        Select: function (query_param, callback) {
+            onQueryListener('dd_main_type_stat', 'SELECT', 'id', query_param, session);
+            provider.select('rpt', 'cf_mui_dd_main_type_stat()', query_param, filter.security(session), callback);
+        },
+        Add: function (data, callback) {
+            provider.insert('rpt', 'dd_main_type_stat', data, function() {
+                onQueryListener('dd_main_type_stat', 'INSERT', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        AddOrUpdate: function (data, callback) {
+            provider.insertOrUpdate('rpt', 'dd_main_type_stat', 'id', data, function() {
+                onQueryListener('dd_main_type_stat', 'INSERT_OR_UPDATE', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        Update: function (data, callback) {
+            provider.update('rpt', 'dd_main_type_stat', 'id', data, function() {
+                onQueryListener('dd_main_type_stat', 'UPDATE', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        Delete: function (data, callback) {
+            provider.delete('rpt', 'dd_main_type_stat', 'id', data, function() {
+                onQueryListener('dd_main_type_stat', 'DELETE', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        Count: function (query_param, callback) {
+            onQueryListener('dd_main_type_stat', 'COUNT', 'id', query_param, session);
+            provider.count('rpt', 'dd_main_type_stat', query_param, callback);
         }
     }
 }
@@ -919,7 +1155,11 @@ exports.pd_userinroles = function (session) {
  *      c_email:text - Эл. почта
  *      c_first_name:text - Наименование
  *      c_login:text - Логин
+ *      c_main_user:text - Куратор
  *      c_password:text - Пароль
+ *      d_expired_date:date - d_expired_date
+ *      f_parent:integer - Родительская запись
+ *      f_type:integer - Тип организации из таблицы ps_user_types
  *      id:integer - Идентификатор
  *      n_count:integer - n_count
  *      s_hash:text - Hash
@@ -1023,6 +1263,77 @@ exports.pf_update_user_roles = function (session) {
                 onQueryListener('pf_update_user_roles', 'QUERY', null, query_param, session);
                 callback(arguments[0]);
             });
+        }
+    }
+}
+
+/**
+ * Тип настройки
+ * @example
+ * Тип: BASE TABLE
+ * Первичный ключ: id
+ * Схема: core
+ * Поля:
+ *      b_default:boolean - По умолчанию
+ *      b_disabled:boolean - Отключено
+ *      c_const:text - Константа
+ *      c_name:text - Наименование
+ *      c_short_name:text - Краткое наименование
+ *      id:integer - Идентификатор
+ *      n_code:integer - Код
+ *      n_order:integer - Сортировка
+ * // примеры выборки
+ * [{ action: "ps_user_types", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры выборки через функцию
+ * [{ action: "cf_mui_ps_user_types", method: "Select", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры добавления
+ * [{ action: "ps_user_types", method: "Add", data: [{ }], type: "rpc", tid: 0 }]
+ * // примеры обновления
+ * [{ action: "ps_user_types", method: "Update", data: [{id:any ...}|[{id:any ...}], type: "rpc", tid: 0 }]
+ * // примеры создания или обновления
+ * [{ action: "ps_user_types", method: "AddOrUpdate", data: [{id:any ...}], type: "rpc", tid: 0 }]
+ * // примеры удаления
+ * [{ action: "ps_user_types", method: "Delete", data: [{id:any ...}|[{id:any ...}], type: "rpc", tid: 0 }]
+ * // примеры получения количества записей
+ * [{ action: "ps_user_types", method: "Count", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.ps_user_types = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            onQueryListener('ps_user_types', 'QUERY', 'id', query_param, session);
+            provider.select('core', 'ps_user_types', query_param, filter.security(session), callback);
+        },
+        Select: function (query_param, callback) {
+            onQueryListener('ps_user_types', 'SELECT', 'id', query_param, session);
+            provider.select('core', 'cf_mui_ps_user_types()', query_param, filter.security(session), callback);
+        },
+        Add: function (data, callback) {
+            provider.insert('core', 'ps_user_types', data, function() {
+                onQueryListener('ps_user_types', 'INSERT', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        AddOrUpdate: function (data, callback) {
+            provider.insertOrUpdate('core', 'ps_user_types', 'id', data, function() {
+                onQueryListener('ps_user_types', 'INSERT_OR_UPDATE', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        Update: function (data, callback) {
+            provider.update('core', 'ps_user_types', 'id', data, function() {
+                onQueryListener('ps_user_types', 'UPDATE', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        Delete: function (data, callback) {
+            provider.delete('core', 'ps_user_types', 'id', data, function() {
+                onQueryListener('ps_user_types', 'DELETE', 'id', data, session);
+                callback(arguments[0]);
+            });
+        },
+        Count: function (query_param, callback) {
+            onQueryListener('ps_user_types', 'COUNT', 'id', query_param, session);
+            provider.count('core', 'ps_user_types', query_param, callback);
         }
     }
 }
@@ -1210,6 +1521,25 @@ exports.sf_accesses = function (session) {
 }
 
 /**
+ * Добавление статистики за каждый день
+ * @example
+ * Тип: FUNCTION
+ * Схема: rpt 
+ * // примеры выборки
+ * [{ action: "sf_add_main_stat", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.sf_add_main_stat = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            provider.call('rpt', 'sf_add_main_stat', query_param.params, function() {
+                onQueryListener('sf_add_main_stat', 'QUERY', null, query_param, session);
+                callback(arguments[0]);
+            });
+        }
+    }
+}
+
+/**
  * Генерация версии БД
  * @example
  * Тип: FUNCTION
@@ -1222,6 +1552,25 @@ exports.sf_build_version = function (session) {
         Query: function (query_param, callback) {
             provider.call('core', 'sf_build_version', query_param.params, function() {
                 onQueryListener('sf_build_version', 'QUERY', null, query_param, session);
+                callback(arguments[0]);
+            });
+        }
+    }
+}
+
+/**
+ * Создание администратора
+ * @example
+ * Тип: FUNCTION
+ * Схема: core 
+ * // примеры выборки
+ * [{ action: "sf_create_admin", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.sf_create_admin = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            provider.call('core', 'sf_create_admin', query_param.params, function() {
+                onQueryListener('sf_create_admin', 'QUERY', null, query_param, session);
                 callback(arguments[0]);
             });
         }
@@ -1260,6 +1609,44 @@ exports.sf_del_user = function (session) {
         Query: function (query_param, callback) {
             provider.call('core', 'sf_del_user', query_param.params, function() {
                 onQueryListener('sf_del_user', 'QUERY', null, query_param, session);
+                callback(arguments[0]);
+            });
+        }
+    }
+}
+
+/**
+ * Процедура отлючения пользователей
+ * @example
+ * Тип: FUNCTION
+ * Схема: core 
+ * // примеры выборки
+ * [{ action: "sf_expire_user", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.sf_expire_user = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            provider.call('core', 'sf_expire_user', query_param.params, function() {
+                onQueryListener('sf_expire_user', 'QUERY', null, query_param, session);
+                callback(arguments[0]);
+            });
+        }
+    }
+}
+
+/**
+ * Версия АРМ
+ * @example
+ * Тип: FUNCTION
+ * Схема: core 
+ * // примеры выборки
+ * [{ action: "sf_get_arm_version", method: "Query", data: [{ }], type: "rpc", tid: 0 }]
+ */
+exports.sf_get_arm_version = function (session) {
+    return {
+        Query: function (query_param, callback) {
+            provider.call('core', 'sf_get_arm_version', query_param.params, function() {
+                onQueryListener('sf_get_arm_version', 'QUERY', null, query_param, session);
                 callback(arguments[0]);
             });
         }

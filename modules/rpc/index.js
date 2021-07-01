@@ -14,7 +14,6 @@ var userContext = require('../custom-context/user');
 var changePasswordRouter = require('./router/changePassword');
 var rpcRouter = require('./router/rpc');
 var cacheRouter = require('./router/cache');
-var socket = require('../socket/main');
 var rpcInjection = require('../rpc-injection');
 var rpcQuery = require('./modules/rpc-query');
 var db = require('../dbcontext');
@@ -40,8 +39,6 @@ module.exports = function (auth_type) {
     router.use(changePasswordRouter(auth_type));
 
     router.use(rpcRouter(auth_type));
-
-    socket.init(auth_type);
 
     var authType = authUtil.getAuthModule(auth_type);
     router.post('/auth', authType.authorize);
