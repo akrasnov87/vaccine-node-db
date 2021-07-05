@@ -154,7 +154,7 @@ function createBadRequest(req, res, itemRPC, err) {
     return response;
 }
 
-var _armVersion = '0.0.0.0';
+var _armVersion = '';
 function armVersion(callback) {
     if (_armVersion) {
         callback(_armVersion);
@@ -164,7 +164,7 @@ function armVersion(callback) {
             if (version.meta.success) {
                 _armVersion = version.result.records[0].sf_get_arm_version;
             } else {
-                _armVersion = version.meta.msg;
+                _armVersion = '0.0.0.0';
             }
             callback(_armVersion);
         });

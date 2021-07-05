@@ -1157,6 +1157,7 @@ exports.pd_userinroles = function (session) {
  *      c_login:text - Логин
  *      c_main_user:text - Куратор
  *      c_password:text - Пароль
+ *      c_version:text - c_version
  *      d_expired_date:date - d_expired_date
  *      f_parent:integer - Родительская запись
  *      f_type:integer - Тип организации из таблицы ps_user_types
